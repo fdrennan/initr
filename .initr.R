@@ -1,3 +1,24 @@
+## usethis policy re: preparation of user-provided path to a resource on user's
+## file system
+library(fs)
+library(xfun)
+library(usethis)
+
+
+tryCatch(expr = {
+  library(jsonlite, quietly = TRUE)
+  library(cli, quietly = TRUE)
+  library(glue, quietly = TRUE)
+  library(readr)
+}, error = function(err) {
+  stop("You must install jsonlite, cli, glue, and readr\ninstall.packages(c('jsonlite', 'cli', 'glue', 'readr'))")
+})
+
+
+initr_config <- fromJSON('.initr.json')
+
+
+style_reset()
 if (interactive()) {
   COMMAND <- 'docker'
   COMMAND <- tolower(COMMAND)
@@ -13,15 +34,18 @@ if (interactive()) {
     if(args[2] == 'y') DESTROY = TRUE else DESTROY = FALSE
   }
 }
+available_commands <- c('init', 'destroy', 'install', 'update', 'docker')
+not_acceptable_command <- !COMMAND %in% available_commands
+if (not_acceptable_command) {
+  stop(cli_alert_warning(glue('{COMMAND} is not an acceptable argument\nTo get started, run Rscript .initr.R init')))
+}
 
-installed_packages <- installed.packages()
+style_inverse(glue('.initr is running COMMAND {style_italic(COMMAND) }'))
 
-IN_RENV_LOCK_EXISTS <- exists('IN_RENV_LOCK')
-if (IN_RENV_LOCK_EXISTS) {
-  if (IN_RENV_LOCK) {
-    if (!IN_RENV_LOCK == TRUE) {
+# Check to see if we can install packages and work with user system.
+if (exists('IN_RENV_LOCK')) {
+  if (!IN_RENV_LOCK == TRUE) {
       IN_RENV_LOCK = FALSE
-    }
   } else {
     IN_RENV_LOCK = FALSE
   }
@@ -29,40 +53,22 @@ if (IN_RENV_LOCK_EXISTS) {
   IN_RENV_LOCK = FALSE
 }
 
-rm(IN_RENV_LOCK_EXISTS)
-
-if (IN_RENV_LOCK & (COMMAND != 'destroy') | (COMMAND == 'docker')) {
+# If in RENV lock, then install necessary packages.
+installed_packages <- installed.packages()[,1]
+if (IN_RENV_LOCK & (COMMAND != 'destroy')) {
   library(renv)
+  
   resp <- lapply(c('fs', 'jsonlite', 'devtools', 'roxygen2', 'glue', 'stevedore', 'usethis', 'plumber', 'tictoc'), function(pkg) {
-    if (!pkg %in% installed_packages[,1]) {
+    if (!pkg %in% installed_packages) {
       message(paste('.initr is installing', pkg))
       install(pkg, dependencies = TRUE)
       message(paste('initr installed:', pkg))
       pkg
+    } else {
+      
     }
   })
 }
-
-if (COMMAND == "help") {
-  system_commands <- "
-# Rscript .initr.R help
-# Rscript .initr.R destroy
-# Rscript .initr.R init
-# Rscript .initr.R build
-# Rscript .initr.R install
-# Rscript .initr.R docker
-# Rscript .initr.R tidy
-
-# Rscript .initr.R destroy y && Rscript .initr.R init && Rscript .initr.R build && update && Rscript .initr.R install && Rscript .initr.R docker
-"
-  message(system_commands)
-}
-
-library(jsonlite, quietly = TRUE)
-
-initr_config <- fromJSON('.initr.json')
-
-message(paste('.initr is RUNNING COMMAND:', COMMAND))
 
 if (COMMAND == "destroy") {
 
@@ -105,7 +111,8 @@ if (COMMAND == 'update') {
   settings$snapshot.type("all")
   dependencies()
   snapshot(prompt=FALSE, force=TRUE)
-  resp <- lapply(initr_config$add_to_gitignore, use_git_ignore)
+  resp <- lapply(initr_config$add_to_dockerignore, function(x) write_union('.Dockerignore', x))
+  resp <- lapply(initr_config$add_to_gitignore, function(x) write_union('.gitignore', x))
 }
 
 if (COMMAND == "init") {
@@ -288,5 +295,11 @@ if (COMMAND == "tidy") {
     # tidy_file(".initr.R")
 }
 
+if (COMMAND == 'prettify') {
+  library(readr)
+  library(jsonlite)
+  initr_config <- prettify(read_file('.initr.json'))
+  write_file(initr_config, '.initr.json')
+}
 
 

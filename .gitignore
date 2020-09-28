@@ -1,7 +1,7 @@
 .Renviron
 .Rproj.user
 renv
-.rinit.R
+.initr.R
 *.env
 .initr.json
 builds
