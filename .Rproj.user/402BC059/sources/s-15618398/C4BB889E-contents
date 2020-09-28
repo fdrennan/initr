@@ -1,0 +1,50 @@
+FROM r-base:4.0.2
+
+WORKDIR /home/rinit
+
+RUN apt-get update --allow-releaseinfo-change -qq && apt-get install -y\
+	sudo\
+	gdebi-core\
+	pandoc\
+	pandoc-citeproc\
+	libcurl4-gnutls-dev\
+	libcairo2-dev\
+	libxt-dev\
+	xtail\
+	wget\
+	libssl-dev\
+	libxml2-dev\
+	python3-venv\
+	libpq-dev\
+	libsodium-dev\
+	libudunits2-dev\
+	libgdal-dev\
+	systemctl\
+	git\
+	libssh2-1\
+	libssh2-1-dev\
+	texlive\
+	unzip\
+	curl
+
+COPY R /home/rinit/R
+
+COPY DESCRIPTION /home/rinit/DESCRIPTION
+
+COPY NAMESPACE /home/rinit/NAMESPACE
+
+COPY plumber.R /home/rinit/plumber.R
+
+COPY renv.lock /home/rinit/renv.lock
+
+COPY man /home/rinit/man
+
+COPY README.md /home/rinit/README.md
+
+COPY builds /home/rinit/builds
+
+COPY .binaries.sh /home/rinit/.binaries.sh
+
+RUN R -e "install.packages('renv')"
+
+RUN R -e "library(renv);consent(provided=T);restore()"

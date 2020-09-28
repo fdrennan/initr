@@ -1,0 +1,512 @@
+system('docker image ls -a')
+system('docker container ls -a')
+walk(
+initr_config$include_in_container,
+~ {
+tryCatch(expr = {
+container$cp_in(
+src = .,
+path_join(c(initr_config$docker_working_directory, .))
+)
+}, error = function(err) {
+message(glue('{.} doesnt exist'))
+print(err)
+})
+}
+)
+system('docker image ls -a')
+system('docker container ls -a')
+started_container <- container$start()
+while (started_container$status() == 'running') {
+message(tail(started_container$logs(), 30))
+Sys.sleep(3)
+}
+started_container$wait()
+system('docker image ls -a')
+system('docker container ls -a')
+container$commit(
+repo = base_docker,
+tag = initr_config$DESCRIPTION$version_number
+)
+system('docker image ls -a')
+system('docker container ls -a')
+docker$image$list()
+docker_images <- docker$image$list()
+docker_images
+docker_images$repo_tags
+unlist(docker_images$repo_tags)
+docker_images$repo_tags
+docker_images
+as.data.frame(docker_images)
+as.data.frame(docker_images)$repo_tags
+docker_images$repo_tags
+unlist(docker_images$repo_tags)
+unlist(docker_images$repo_tags) == docker_container_name
+docker_images[unlist(docker_images$repo_tags) == docker_container_name]
+docker_images[unlist(docker_images$repo_tags) == docker_container_name]$id()
+docker_images[unlist(docker_images$repo_tags) == docker_container_name]$id
+docker_images[unlist(docker_images$repo_tags) == docker_container_name]
+docker_images[,unlist(docker_images$repo_tags) == docker_container_name]
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id
+container_with_binaries <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "install.packages('renv');library(renv);consent(provided=T);restore(prompt=FALSE)"),
+working_dir = initr_config$docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')v
+system('docker container ls -a')
+container_with_binaries$start()
+while (container_with_binaries$status() == 'running') {
+message(tail(container_with_binaries$logs(), 30))
+Sys.sleep(3)
+}
+if (interactive()) {
+COMMAND <- 'docker'
+COMMAND <- tolower(COMMAND)
+if (COMMAND == 'destroy') {
+DESTROY = TRUE
+}
+COMMAND
+} else {
+args <- commandArgs(trailingOnly = TRUE)
+COMMAND <- args[1]
+COMMAND <- tolower(COMMAND)
+if (COMMAND == 'destroy') {
+if(args[2] == 'y') DESTROY = TRUE else DESTROY = FALSE
+}
+}
+installed_packages <- installed.packages()
+IN_RENV_LOCK_EXISTS <- exists('IN_RENV_LOCK')
+if (IN_RENV_LOCK_EXISTS) {
+if (IN_RENV_LOCK) {
+if (!IN_RENV_LOCK == TRUE) {
+IN_RENV_LOCK = FALSE
+}
+} else {
+IN_RENV_LOCK = FALSE
+}
+} else {
+IN_RENV_LOCK = FALSE
+}
+rm(IN_RENV_LOCK_EXISTS)
+if (IN_RENV_LOCK & (COMMAND != 'destroy') | (COMMAND == 'docker')) {
+library(renv)
+resp <- lapply(c('fs', 'jsonlite', 'devtools', 'roxygen2', 'glue', 'stevedore', 'usethis', 'plumber'), function(pkg) {
+if (!pkg %in% installed_packages[,1]) {
+message(paste('.rinit is installing', pkg))
+install(pkg, dependencies = TRUE)
+message(paste('rinit installed:', pkg))
+pkg
+}
+})
+}
+if (COMMAND == "help") {
+system_commands <- "
+# Rscript .rinit.R help
+# Rscript .rinit.R destroy
+# Rscript .rinit.R init
+# Rscript .rinit.R build
+# Rscript .rinit.R install
+# Rscript .rinit.R docker
+# Rscript .rinit.R tidy
+"
+message(system_commands)
+}
+library(jsonlite, quietly = TRUE)
+initr_config <- fromJSON('.initr.json')
+message(paste('.initr is RUNNING COMMAND:', COMMAND))
+if (COMMAND == "destroy") {
+if (!DESTROY) {
+stop('Termination destruction process')
+}
+if (IN_RENV_LOCK) {
+lapply(c('fs'), function(pkg) {
+if (!pkg %in% installed_packages[,1]) {
+install.packages(pkg, dependencies = TRUE)
+}
+})
+}
+library(fs, quietly = TRUE)
+keep_these_paths <- file.path('.', initr_config$protect)
+current_directory_files <- dir_ls(all = TRUE)
+files_to_delete <- current_directory_files[!current_directory_files %in% initr_config$protect]
+if (length(files_to_delete) > 0) {
+lapply(files_to_delete, function(file_path) {
+if (is_dir(file_path))
+dir_delete(path = file_path) else file_delete(path = file_path)
+})
+}
+as.logical(initr_config$in_renv)
+initr_config$in_renv = 'false'
+write_json(initr_config, '.initr.json', pretty=TRUE)
+message('IN_RENV_LOCK IS FALSE')
+message("Please restart your R session")
+message("Then Run --> Rscript .rinit.R build <-- ")
+}
+if (COMMAND == 'update') {
+library(git2r)
+library(usethis)
+library(renv)
+library(fs)
+settings$snapshot.type("all")
+dependencies()
+snapshot(prompt=FALSE, force=TRUE)
+try(file.remove('.binaries.sh'))
+write(x = "#!/bin/bash", '.binaries.sh')
+write(x = paste(c("apt-get update --allow-releaseinfo-change -qq && apt-get install -y", initr_config$binaries), collapse = '\\\n\t'), '.binaries.sh')
+resp <- lapply(initr_config$add_to_gitignore, use_git_ignore)
+}
+if (COMMAND == "init") {
+if (!IN_RENV_LOCK) {
+library(fs, quietly = TRUE)
+library(renv, quietly = TRUE)
+write(
+'IN_RENV_LOCK = TRUE; paste("IN_RENV_LOCK", IN_RENV_LOCK);',
+file='.Rprofile',
+append=TRUE
+)
+write(
+"message('beep boop .init initialized - You can delete this message in .Rprofile')",
+file='.Rprofile',
+append=TRUE
+)
+message('')
+message("Initializing renv")
+consent(provided = TRUE)
+init(bare = TRUE)
+initr_config$in_renv = 'true'
+install(c('fs', 'glue', 'devtools', 'plumber'))
+write(x = paste(c("apt-get update --allow-releaseinfo-change -qq && apt-get install -y", initr_config$binaries), collapse = ' \\\n\t'), '.binaries.sh')
+write_json(initr_config, '.initr.json', pretty=TRUE)
+} else {
+message('.init already initted')
+}
+}
+if (COMMAND == "build") {
+library(fs)
+if (!IN_RENV_LOCK) {
+stop('You cannot run this command ourside of IN_RENV_LOCK')
+}
+message(".initr is going to build your package now")
+message("Here is what is going in. \nIf you dont like it, you can run in your terminal\n--> Rscript .rinit.R destroy y <--")
+toJSON(initr_config$DESCRIPTION, pretty = TRUE)
+library(devtools, quietly = TRUE)
+library(glue, quietly = TRUE)
+create_package(
+path = getwd(),
+fields = list(
+Package = initr_config$DESCRIPTION$package_name,
+Version = initr_config$DESCRIPTION$version_number,
+Author = initr_config$DESCRIPTION$AUTHORS[[1]]$preferred_name,
+Maintainer = paste(initr_config$DESCRIPTION$AUTHORS[[1]]$preferred_name, glue('<{initr_config$DESCRIPTION$AUTHORS[[1]]$email}}>')),
+Language = "es"
+),
+rstudio = rstudioapi::isAvailable(),
+roxygen = as.logical(initr_config$roxygen),
+check_name = as.logical(initr_config$check_name),
+open = FALSE
+)
+file_delete('DESCRIPTION')
+use_description(
+fields = list(
+Title = initr_config$DESCRIPTION$project_title,
+Description = initr_config$DESCRIPTION$project_description,
+Language = initr_config$DESCRIPTION$language,
+License = initr_config$DESCRIPTION$license,
+LazyData = initr_config$DESCRIPTION$lazy_data
+)
+)
+make_useful <- as.logical(initr_config$make_useful_function)
+if (make_useful) {
+message('.initr is making you a useful function in R')
+file_contents <- glue::glue("#' glue_message\n#' @importFrom glue glue\n#' @param string A string\n#' @export glue_message\nglue_message <- function(string, ...) message(glue(string, ...))")
+sink(file = "R/useful.R")
+print(file_contents)
+sink()
+}
+library(git2r)
+resp <- lapply(initr_config$add_to_gitignore, use_git_ignore)
+# init(path = getwd())
+if (initr_config$git_protocol == 'ssh') {
+message('.initr setting --> options(usethis.protocol = "ssh")')
+options(usethis.protocol = "ssh")
+} else {
+message(glue('initr_config$git_protocol: {initr_config$git_protocol}\n Defaulting to https'))
+options(usethis.protocol = "https")
+}
+if ('plumber' %in% names(initr_config$services)) {
+file.copy('.initr.store/plumber.R', 'plumber.R', overwrite = TRUE)
+}
+try(file.remove('.binaries.sh'))
+write(x = "#!/bin/bash", file = '.binaries.sh', append = TRUE)
+write(x = paste(c("apt-get update --allow-releaseinfo-change -qq && apt-get install -y", initr_config$binaries), collapse = '\\\n\t'), '.binaries.sh')
+message('You must go create a repo and and set "git_page": ["git@github.com:your_thing/project.git"]')
+message("
+AS WELL, YOU NEED TO RUN YOUR GIT UP ON GITHUB
+MY COMMANDS COMMANDS TO DO THIS WERE AS FOLLOWS, BUT YOURS WILL BE DIFFERENT
+--------------------------------------------------------
+git init
+git add README.md
+git commit -m \"first commit\"
+git branch -M master
+git remote add origin git@github.com:fdrennan/initr.git
+git push -u origin master
+--------------------------------------------------------
+")
+}
+if (COMMAND == "install") {
+library(devtools)
+library(fs)
+library(renv)
+if(!dir_exists('builds')) {
+dir_create('builds')
+}
+install()
+snapshot(prompt=FALSE, force=TRUE)
+document(pkg = getwd())
+build(
+pkg = ".",
+path = './builds',
+binary = TRUE,
+vignettes = TRUE
+)
+library(initr_config$DESCRIPTION$package_name, character.only = TRUE, quietly = TRUE)
+}
+library(stevedore)
+library(renv)
+{
+library(purrr, quietly = TRUE, warn.conflicts = FALSE)
+library(glue, quietly = TRUE, warn.conflicts = FALSE)
+library(fs, quietly = TRUE, warn.conflicts = FALSE)
+}
+base_docker_directory <- path_join(parts = c(
+'/home', initr_config$DESCRIPTION$package_name)
+)
+docker <- stevedore::docker_client()
+{
+library(purrr, quietly = TRUE, warn.conflicts = FALSE)
+library(glue, quietly = TRUE, warn.conflicts = FALSE)
+library(fs, quietly = TRUE, warn.conflicts = FALSE)
+}
+base_docker_directory <- path_join(parts = c(
+'/home', initr_config$DESCRIPTION$package_name)
+)
+docker <- stevedore::docker_client()
+docker$container$prune()
+docker$image$prune()
+docker$volume$prune()
+system('docker image ls -a')
+system('docker container ls -a')
+docker$login(
+username = initr_config$docker_creds[[1]],
+password = initr_config$docker_creds[[2]],
+serveraddress = 'https://index.docker.io/v1'
+)
+base_image <- docker$image$pull(initr_config$rbase)
+system('docker image ls -a')
+system('docker container ls -a')
+try(docker$container$remove(initr_config$DESCRIPTION$package_name))
+docker_container_name <- paste(base_docker, initr_config$DESCRIPTION$version_number, sep = ':')
+docker_working_directory <- initr_config$docker_working_directory
+message(glue('base_docker: {base_docker}'))
+message(glue('docker_container_name: {docker_container_name}'))
+message(glue('docker_working_directory: {docker_working_directory}'))
+container <- docker$container$create(
+base_image$id(),
+name = initr_config$DESCRIPTION$package_name,
+cmd = c("sh", ".binaries.sh"),
+working_dir = docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+walk(
+initr_config$include_in_container,
+~ {
+tryCatch(expr = {
+container$cp_in(
+src = .,
+path_join(c(initr_config$docker_working_directory, .))
+)
+}, error = function(err) {
+message(glue('{.} doesnt exist'))
+print(err)
+})
+}
+)
+system('docker image ls -a')
+system('docker container ls -a')
+started_container <- container$start()
+while (started_container$status() == 'running') {
+message(tail(started_container$logs(), 30))
+Sys.sleep(3)
+}
+system('docker image ls -a')
+system('docker container ls -a')
+container$commit(
+repo = base_docker,
+tag = initr_config$DESCRIPTION$version_number
+)
+system('docker image ls -a')
+system('docker container ls -a')
+docker_images <- docker$image$list()
+container_with_binaries <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "install.packages('renv');library(renv);consent(provided=T);restore(prompt=FALSE)")
+# working_dir = initr_config$docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+container_with_binaries$start()
+while (container_with_binaries$status() == 'running') {
+message(tail(container_with_binaries$logs(), 30))
+Sys.sleep(3)
+}
+container_with_binaries <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "install.packages('renv')")
+# working_dir = initr_config$docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+container_with_binaries$start()
+while (container_with_binaries$status() == 'running') {
+message(tail(container_with_binaries$logs(), 30))
+Sys.sleep(3)
+}
+container_with_binaries$commit(
+repo = base_docker,
+tag = initr_config$DESCRIPTION$version_number
+)
+container_with_renv <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "install.packages('renv')")
+# working_dir = initr_config$docker_working_directory
+)
+container_with_renv <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "library(renv);consent(provided=T);restore(prompt=FALSE)")
+# working_dir = initr_config$docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+container_with_renv$start()
+while (container_with_renv$status() == 'running') {
+message(tail(container_with_renv$logs(), 30))
+Sys.sleep(3)
+}
+while (container_with_renv$status() == 'running') {
+message(tail(container_with_renv$logs(), 30))
+Sys.sleep(3)
+}
+container_with_renv
+container_with_renv <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "library(renv);consent(provided=T);restore(prompt=FALSE)")
+# working_dir = initr_config$docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+container_with_renv$start()
+while (container_with_renv$status() == 'running') {
+message(tail(container_with_renv$logs(), 30))
+Sys.sleep(3)
+}
+message(tail(container_with_renv$logs(), 30))
+container_with_binaries$commit(
+repo = base_docker,
+tag = initr_config$DESCRIPTION$version_number
+)
+container_with_binaries$run()
+container_with_binaries$start()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries$logs()
+container_with_binaries <- docker$container$create(
+docker_images[unlist(docker_images$repo_tags) == docker_container_name,]$id,
+# cmd = c(".", ".binaries.sh"),
+cmd = c("R", "-e", "install.packages('renv')")
+# working_dir = initr_config$docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+container_with_binaries$start()
+while (container_with_binaries$status() == 'running') {
+message(tail(container_with_binaries$logs(), 30))
+Sys.sleep(3)
+}
+while (container_with_binaries$status() == 'running') {
+message(tail(container_with_binaries$logs(), 30))
+Sys.sleep(3)
+}
+message(tail(container_with_binaries$logs(), 30))
+cat(c("R", "-e", "install.packages('renv');library(renv);consent(provided=T);restore(prompt=FALSE)"))
+{
+library(purrr, quietly = TRUE, warn.conflicts = FALSE)
+library(glue, quietly = TRUE, warn.conflicts = FALSE)
+library(fs, quietly = TRUE, warn.conflicts = FALSE)
+}
+base_docker_directory <- path_join(parts = c(
+'/home', initr_config$DESCRIPTION$package_name)
+)
+docker <- stevedore::docker_client()
+docker$container$prune()
+docker$image$prune()
+docker$volume$prune()
+system('docker image ls -a')
+system('docker container ls -a')
+docker$login(
+username = initr_config$docker_creds[[1]],
+password = initr_config$docker_creds[[2]],
+serveraddress = 'https://index.docker.io/v1'
+)
+base_image <- docker$image$pull(initr_config$rbase)
+system('docker image ls -a')
+system('docker container ls -a')
+try(docker$container$remove(initr_config$DESCRIPTION$package_name))
+docker_container_name <- paste(base_docker, initr_config$DESCRIPTION$version_number, sep = ':')
+docker_working_directory <- initr_config$docker_working_directory
+message(glue('base_docker: {base_docker}'))
+message(glue('docker_container_name: {docker_container_name}'))
+message(glue('docker_working_directory: {docker_working_directory}'))
+container <- docker$container$create(
+base_image$id(),
+name = initr_config$DESCRIPTION$package_name,
+cmd = c("sh", ".binaries.sh"),
+working_dir = docker_working_directory
+)
+system('docker image ls -a')
+system('docker container ls -a')
+walk(
+initr_config$include_in_container,
+~ {
+tryCatch(expr = {
+container$cp_in(
+src = .,
+path_join(c(initr_config$docker_working_directory, .))
+)
+}, error = function(err) {
+message(glue('{.} doesnt exist'))
+print(err)
+})
+}
+)
+system('docker image ls -a')
+system('docker container ls -a')
+started_container <- container$start()
+while (started_container$status() == 'running') {
+message(tail(started_container$logs(), 30))
+Sys.sleep(3)
+}

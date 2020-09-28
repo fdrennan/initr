@@ -1,0 +1,16 @@
+Package: rinit
+Title: Automation Tools for Production
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "First",
+           family = "Last",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This is so fucking beautiful...
+License: MIT + file LICENCE
+Encoding: UTF-8
+Language: es
+LazyData: false
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1

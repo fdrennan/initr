@@ -1,0 +1,24 @@
+{
+    "id": "A8610ED6",
+    "path": "~/ndex_platform/rinit/.initr.store/plumber.R",
+    "project_path": ".initr.store/plumber.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1601267888629.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "cursorPosition": "57,2",
+        "scrollLine": "46"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1601268013,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1601268013187,
+    "read_only": false,
+    "read_only_alternatives": []
+}

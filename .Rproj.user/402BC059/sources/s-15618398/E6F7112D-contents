@@ -1,0 +1,24 @@
+apt-get update --allow-releaseinfo-change -qq && apt-get install -y\
+	sudo\
+	gdebi-core\
+	pandoc\
+	pandoc-citeproc\
+	libcurl4-gnutls-dev\
+	libcairo2-dev\
+	libxt-dev\
+	xtail\
+	wget\
+	libssl-dev\
+	libxml2-dev\
+	python3-venv\
+	libpq-dev\
+	libsodium-dev\
+	libudunits2-dev\
+	libgdal-dev\
+	systemctl\
+	git\
+	libssh2-1\
+	ibssh2-1-dev\
+	texlive\
+	unzip\
+	curl

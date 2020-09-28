@@ -1,0 +1,24 @@
+{
+    "id": "8E4FA2CF",
+    "path": "~/ndex_platform/rinit/plumber.R",
+    "project_path": "plumber.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1601267878736.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "cursorPosition": "7,2",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1601268003,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1601268003613,
+    "read_only": false,
+    "read_only_alternatives": []
+}

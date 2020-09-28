@@ -1,0 +1,24 @@
+{
+    "id": "5E8F8410",
+    "path": "~/ndex_platform/rinit/Dockerfile",
+    "project_path": "Dockerfile",
+    "type": "text",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1601259011942.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "cursorPosition": "49,76",
+        "scrollLine": "22"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1601260035,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1601260035525,
+    "read_only": false,
+    "read_only_alternatives": []
+}
