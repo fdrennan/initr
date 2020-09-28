@@ -1,0 +1,7 @@
+.Renviron
+.Rproj.user
+renv
+.rinit.R
+*.env
+.initr.json
+builds

@@ -1,0 +1,14 @@
+version: '3.4'
+services:
+  rapi:
+    # image: rinit
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /plumber.R
+    restart: always
+    volumes:
+     - ./plumber.R:/plumber.R
+    ports:
+     - "80:8000"
+    entrypoint: ls -lah /
